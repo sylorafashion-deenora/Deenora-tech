@@ -1,40 +1,17 @@
-import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Profile } from '../types';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Home() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const { profile, loading } = useAuth();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-        } else if (data) {
-          setProfile(data);
-        }
-      }
-      setLoadingProfile(false);
-    };
-
-    fetchProfile();
-  }, []);
+  console.log('User Profile:', profile);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
-  if (loadingProfile) {
-    return <div className="min-h-screen flex items-center justify-center">Loading profile...</div>;
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   return (
