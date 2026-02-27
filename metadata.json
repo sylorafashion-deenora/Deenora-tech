@@ -1,0 +1,10 @@
+{
+  "name": "Deenora V3",
+  "description": "Deenora Madrasah Management App",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+
+}
