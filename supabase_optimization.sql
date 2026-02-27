@@ -1,4 +1,6 @@
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- 1. CRITICAL PERFORMANCE INDICES (Tenant-First)
 -- These indices ensure that RLS filters (which always check madrasah_id) are lightning fast.
 
@@ -7,8 +9,13 @@ CREATE INDEX IF NOT EXISTS idx_students_tenant_class_roll
 ON public.students (madrasah_id, class_id, roll);
 
 -- Students: Optimized for name search within a madrasah
+-- Students: Optimized for name search within a madrasah
 CREATE INDEX IF NOT EXISTS idx_students_tenant_name_search 
-ON public.students USING gin (madrasah_id, student_name gin_trgm_ops);
+ON public.students USING gin (student_name gin_trgm_ops);
+
+-- Students: Separate index for madrasah_id for efficient filtering
+CREATE INDEX IF NOT EXISTS idx_students_madrasah_id
+ON public.students (madrasah_id);
 
 -- Attendance: Optimized for date range queries within a madrasah
 CREATE INDEX IF NOT EXISTS idx_attendance_tenant_date 
